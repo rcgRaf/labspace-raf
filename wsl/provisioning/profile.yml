@@ -20,10 +20,10 @@
 
 # ====================================================================================================================================
 
-    - name: Configure Bashrc
-      copy:
-        src: "{{ artifacts }}/home/user/.bashrc"
-        dest: "~/.bashrc"
+    # - name: Configure Bashrc
+    #   copy:
+    #     src: "{{ artifacts }}/home/user/.bashrc"
+    #     dest: "~/.bashrc"
 
     - name: Create Directory 
       file:
@@ -149,12 +149,12 @@
 
 # ====================================================================================================================================
 
-    - name: Configure Bashrc (root)
-      become: yes
-      become_user: "root"
-      copy:
-        src: "{{ artifacts }}/root/.bashrc"
-        dest: "~/.bashrc"
+    # - name: Configure Bashrc (root)
+    #   become: yes
+    #   become_user: "root"
+    #   copy:
+    #     src: "{{ artifacts }}/root/.bashrc"
+    #     dest: "~/.bashrc"
 
     # - name: Configure Midnight Commander (root)
     #   become: yes
