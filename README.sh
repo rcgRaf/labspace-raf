@@ -147,6 +147,19 @@ cd $HOME_WIN/Work/$PROJECT_NAME && ./wsl/provision.sh
 cd $HOME_WIN/Work/$PROJECT_NAME && ./wsl/winstrap.sh
 #
 
+
+#===VirtualBox==============================================================================================================
+
+# Set your "Default Machine Folder" with gui to:
+#
+# C:\Users\$USER_WIN\VirtualBox
+#
+
+# Set your "VirtualBox Host-Only Ethernet Adapter" IPv4 Address with gui to:
+#
+# 192.168.73.1
+#
+
 #===Vagrant=================================================================================================================
 
 # Install Vagrant
