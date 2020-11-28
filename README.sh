@@ -27,8 +27,11 @@ mkdir -p $ARTIFACTS/home/user/.ssh
 mkdir -p $ARTIFACTS/root
 
 # Put your keys in $ARTIFACTS/home/user/.ssh/
-# Your private keys are named: id_rsa*.key
-# Your public keys are named: id_rsa*.pub
+#
+# id_rsa_$DEPLOYER.key (encrypted)
+# id_rsa_$DEPLOYER.pub
+# id_rsa_vagrant.key (unecrypted)
+# id_rsa_vagrant.pub
 
 #===WSL=====================================================================================================================
 
@@ -143,6 +146,18 @@ cd $HOME_WIN/Work/$PROJECT_NAME && ./wsl/provision.sh
 #
 cd $HOME_WSL/install && sudo apt install ./vagrant_2.2.9_x86_64.deb
 bash
+#
+
+# Run Vagrants
+#
+cd $HOME_WIN/Work/$PROJECT_NAME && ./vagrant/lab-centos/up.sh
+cd $HOME_WIN/Work/$PROJECT_NAME && ./vagrant/lab-ubuntu/up.sh
+#
+
+# Connect to VMs
+#
+ssh -A 192.168.73.81
+ssh -A 192.168.73.82
 #
 
 #===========================================================================================================================
