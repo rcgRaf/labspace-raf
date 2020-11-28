@@ -1,0 +1,47 @@
+---
+
+# ====================================================================================================================================
+
+- name: PRULLCONFIG
+  hosts: localhost
+
+  vars:
+    - ansible_deployer: "{{ lookup('env','ANSIBLE_DEPLOYER') }}"
+    - artifacts: "{{ lookup('env','ARTIFACTS') }}"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+  become: yes
+  become_user: "{{ ansible_deployer }}"
+  
+# ====================================================================================================================================
+
+  tasks:
+
+# ====================================================================================================================================
+
+    - name: Syncronize User Profile (pull)
+      synchronize:
+        mode: pull
+        src: "~/"
+        dest: "{{ artifacts }}/home/user/"
+        owner: no
+        group: no
+        perms: no
+        recursive: yes
+        existing_only: yes
+
+    - name: Syncronize Root Profile (pull)
+      become: yes
+      become_user: "root"
+      synchronize:
+        mode: pull
+        src: "/root/"
+        dest: "{{ artifacts }}/root/"
+        owner: no
+        group: no
+        perms: no
+        recursive: yes
+        existing_only: yes
+
+# ====================================================================================================================================

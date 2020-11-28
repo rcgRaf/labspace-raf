@@ -1,0 +1,163 @@
+---
+
+# ====================================================================================================================================
+
+- name: BOOTSTRAPPING
+  hosts: all
+  
+  vars:
+    - ansible_deployer: "{{ lookup('env','ANSIBLE_DEPLOYER') }}"
+    - artifacts: "{{ lookup('env','ARTIFACTS') }}"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+  become: yes
+  become_user: root
+  
+# ====================================================================================================================================
+
+  tasks:
+
+ # ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Set Timezone
+      timezone:
+        name: Asia/Yerevan
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Configure Root
+      user:
+        name: root
+        password: $6$.5DNvyZdAmWlDdAR$Pubf5z2O4ZCR/0WHBY1VOtLMNVnrehQqqdmNJ6sv8pskVHyWVUFgn48YABXX4oE2nAea73Z3wIip2nelXNylt1
+
+    - name: Set Root Key
+      authorized_key:
+        user: root
+        key: "{{ item }}"
+        state: present
+        exclusive: True
+      with_file:
+        - "{{ artifacts }}/home/user/.ssh/id_rsa_{{ ansible_deployer }}.pub"
+
+    - name: Configure User
+      user:
+        name: "{{ ansible_deployer }}"
+        shell: /bin/bash
+        groups: sudo,adm,cdrom,floppy,audio,dip,video,plugdev,netdev,lxd,lpadmin,sambashare,docker
+        append: yes
+        password: $6$.5DNvyZdAmWlDdAR$Pubf5z2O4ZCR/0WHBY1VOtLMNVnrehQqqdmNJ6sv8pskVHyWVUFgn48YABXX4oE2nAea73Z3wIip2nelXNylt1
+
+    - name: Set User Key
+      authorized_key:
+        user: "{{ ansible_deployer }}"
+        key: "{{ item }}"
+        state: present
+        exclusive: True
+      with_file:
+        - "{{ artifacts }}/home/user/.ssh/id_rsa_{{ ansible_deployer }}.pub"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Mark Deployment
+      copy:
+        src: "./files/hushlogin"
+        dest: "/home/{{ ansible_deployer }}/.hushlogin"
+        owner: "{{ ansible_deployer }}"
+        group: "{{ ansible_deployer }}"
+      register: deployment_mark
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Set Sudoers 
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: "^%sudo"
+        line: "%sudo ALL=(ALL) NOPASSWD: ALL"
+        validate: "visudo -cf %s"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Install Packages
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - vim
+        - wget
+        - figlet
+        - acl
+        - bash-completion
+        - chrony
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Enable Services
+      service: "name={{ item }} state=started enabled=yes"
+      with_items:
+        - chronyd
+        - docker
+      ignore_errors: yes
+
+    - name: Disable Services
+      service: "name={{ item }} state=stopped enabled=no"
+      with_items:
+        - rpcbind
+        # - systemd-resolved
+      ignore_errors: yes
+
+    - name: Mask Services
+      service: "name={{ item }} masked=yes"
+      with_items:
+        - rpcbind
+      ignore_errors: yes
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Configure SSHd
+      template:
+        src: "./templates/sshd_config.j2"
+        dest: "/etc/ssh/sshd_config"
+        owner: root
+        group: root
+        mode: 0600
+      register: sshd_config
+
+    - name: Restart SSHd
+      service: name=sshd state=restarted
+      when: sshd_config.changed
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Make SSH Insecure
+      copy:
+        src: "./files/07-insecure.conf"
+        dest: "/etc/ssh/ssh_config.d/"
+        mode: 0644
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Set Grub
+      copy:
+        src: "./files/grub"
+        dest: "/etc/default/"
+        owner: root
+        group: root
+        mode: 0644
+      register: grub
+
+    - name: Make Grub
+      shell: /usr/sbin/grub-mkconfig -o /boot/grub/grub.cfg
+      when: grub.changed
+
+# ====================================================================================================================================
+
+    # - name: Reboot Fresh Instance
+    #   reboot:
+    #     reboot_timeout: 3600
+    #   when: deployment_mark.changed
+
+# ====================================================================================================================================
+
+

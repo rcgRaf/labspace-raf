@@ -1,0 +1,29 @@
+# Terraform
+**/.terraform
+**/*.tfstate
+**/*.tfstate.*
+
+# Visual Studio Code
+**/.vscode
+
+# Secrets
+**/*secrets
+
+# Zignore
+**/zignore
+**/zignore.*
+
+# Vagrant
+**/.vagrant
+**/.vagrant.d
+**/*.iso
+
+# Data
+**/log/
+**/synced_data/
+
+# Packer
+**/output/
+
+# Windows
+**/desktop.ini

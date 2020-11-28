@@ -1,0 +1,164 @@
+---
+
+# ====================================================================================================================================
+
+- name: DEPLOYMENT ENVIRONMENT
+  hosts: localhost
+  
+  vars:
+    - ansible_deployer: "{{ lookup('env','ANSIBLE_DEPLOYER') }}"
+    - artifacts: "{{ lookup('env','ARTIFACTS') }}"
+
+    - bindir: "~/.local/bin"
+    - downloads: "~/install"
+
+    - terraform_version: "0.12.24"
+    - packer_version: "1.6.1"
+    - vagrant_version: "2.2.9"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+  become: yes
+  become_user: "{{ ansible_deployer }}"
+  
+# ====================================================================================================================================
+
+  tasks:
+
+# ====================================================================================================================================
+
+    - name: Skip NOT Ubuntu-20.04
+      meta: end_play
+      when: 
+        - ansible_distribution == "Ubuntu" 
+        - ansible_distribution_major_version < '20'
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Install Packages
+      become: yes
+      become_user: "root"
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - awscli
+        - azure-cli
+
+    - name: Install Packages (pip3)
+      become: yes
+      become_user: "root"
+      pip:
+        name: [jinja2-cli, j2cli]
+        executable: /usr/bin/pip3
+
+# ====================================================================================================================================
+
+    - name: Create Directory 
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      with_items:
+        - "~/.local/bin"
+        - "~/install"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Stat Terraform
+      stat:
+        path: "{{ bindir }}/terraform"
+      register: terraform
+
+    - name: Clean Terraform 
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "~/.tfenv"
+        - "{{ bindir }}/terraform"
+        - "{{ bindir }}/tfenv"
+      when: not terraform.stat.exists
+
+    - name: Checkout Tfenv 
+      git:
+        repo: "https://github.com/tfutils/tfenv.git"
+        dest: "~/.tfenv"
+      when: not terraform.stat.exists
+
+    - name: Install Terraform
+      shell: |
+        ln -sf ~/.tfenv/bin/* {{ bindir }}
+        {{ bindir }}/tfenv install {{ terraform_version }}
+        {{ bindir }}/tfenv use {{ terraform_version }}
+      args:
+        warn: no
+      when: not terraform.stat.exists
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Stat Packer
+      stat:
+        path: "{{ bindir }}/packer"
+      register: packer
+
+    - name: Download Packer
+      get_url:
+        url: "https://releases.hashicorp.com/packer/{{ packer_version }}/packer_{{ packer_version }}_linux_amd64.zip"
+        dest: "{{ downloads }}/"
+      when: not packer.stat.exists
+
+    - name: Install Packer
+      shell: |
+        unzip {{ downloads }}/packer_{{ packer_version }}_linux_amd64.zip -d {{ bindir }}/
+      args:
+        warn: no
+      when: not packer.stat.exists
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Stat Vagrant
+      stat:
+        path: "/usr/bin/vagrant"
+      register: vagrant
+
+    - name: Download Vagrant
+      get_url:
+        url: "https://releases.hashicorp.com/vagrant/{{ vagrant_version }}/vagrant_{{ vagrant_version }}_x86_64.deb"
+        dest: "{{ downloads }}/"
+      when: not vagrant.stat.exists
+
+    - name: Install Vagrant
+      debug:
+        msg: " !!!WARNING!!! Install Vagrant: \" sudo apt install {{ downloads }}/vagrant_{{ vagrant_version }}_x86_64.deb \" !!!WARNING!!!"
+      when: not vagrant.stat.exists
+
+# ====================================================================================================================================
+
+    - name: Add GitHub Key
+      become: yes
+      become_user: "root"
+      apt_key:
+        id: C99B11DEB97541F0
+        keyserver: keyserver.ubuntu.com
+        state: present
+
+    - name: Add GitHub Repo
+      become: yes
+      become_user: "root"
+      apt_repository:
+        repo: deb https://cli.github.com/packages {{ ansible_distribution_release }} main
+        state: present
+
+    - name: Install GitHub Cli
+      become: yes
+      become_user: "root"
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - gh
+
+# ====================================================================================================================================
+
+

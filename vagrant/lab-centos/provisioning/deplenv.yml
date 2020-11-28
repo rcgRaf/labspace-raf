@@ -1,0 +1,132 @@
+---
+
+# ====================================================================================================================================
+
+- name: DEPLOYMENT ENVIRONMENT
+  hosts: all
+  
+  vars:
+    - ansible_deployer: "{{ lookup('env','ANSIBLE_DEPLOYER') }}"
+    - artifacts: "{{ lookup('env','ARTIFACTS') }}"
+
+    - bindir: "~/.local/bin"
+    - downloads: "~/install"
+
+    - terraform_version: "0.12.24"
+    - packer_version: "1.6.1"
+    - vagrant_version: "2.2.9"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+  become: yes
+  become_user: "{{ ansible_deployer }}"
+  
+# ====================================================================================================================================
+
+  tasks:
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Install Packages
+      become: yes
+      become_user: "root"
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - wget
+        - ansible
+        - python2
+        - python2-pip
+        - json
+
+    - name: Install Packages (pip2)
+      become: yes
+      become_user: "root"
+      pip:
+        name: [botocore, boto, boto3]
+        executable: /usr/bin/pip2
+
+    - name: Install Packages (pip3)
+      become: yes
+      become_user: "root"
+      pip:
+        name: [botocore, boto, boto3, jinja2-cli, j2cli]
+        executable: /usr/bin/pip3
+
+# ====================================================================================================================================
+
+    - name: Copy Docker-Destroy
+      become: yes
+      become_user: "root"
+      copy:
+        src: "./files/docker-destroy"
+        dest: "/usr/local/bin/"
+        owner: root
+        group: root
+        mode: 0755
+
+# ====================================================================================================================================
+
+    - name: Create Directory 
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0755
+      with_items:
+        - "~/.local/bin"
+        - "~/install"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Stat Terraform
+      stat:
+        path: "{{ bindir }}/terraform"
+      register: terraform
+
+    - name: Clean Terraform 
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "~/.tfenv"
+        - "{{ bindir }}/terraform"
+        - "{{ bindir }}/tfenv"
+      when: not terraform.stat.exists
+
+    - name: Checkout Tfenv 
+      git:
+        repo: "https://github.com/tfutils/tfenv.git"
+        dest: "~/.tfenv"
+      when: not terraform.stat.exists
+
+    - name: Install Terraform
+      shell: |
+        ln -sf ~/.tfenv/bin/* {{ bindir }}
+        {{ bindir }}/tfenv install {{ terraform_version }}
+        {{ bindir }}/tfenv use {{ terraform_version }}
+      args:
+        warn: no
+      when: not terraform.stat.exists
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Stat Packer
+      stat:
+        path: "{{ bindir }}/packer"
+      register: packer
+
+    - name: Download Packer
+      get_url:
+        url: "https://releases.hashicorp.com/packer/{{ packer_version }}/packer_{{ packer_version }}_linux_amd64.zip"
+        dest: "{{ downloads }}/"
+      when: not packer.stat.exists
+
+    - name: Install Packer
+      shell: |
+        unzip {{ downloads }}/packer_{{ packer_version }}_linux_amd64.zip -d {{ bindir }}/
+      args:
+        warn: no
+      when: not packer.stat.exists
+
+# ====================================================================================================================================

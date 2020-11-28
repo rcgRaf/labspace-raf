@@ -1,0 +1,166 @@
+---
+
+# ====================================================================================================================================
+
+- name: PROFILE
+  hosts: localhost
+
+  vars:
+    - ansible_deployer: "{{ lookup('env','ANSIBLE_DEPLOYER') }}"
+    - artifacts: "{{ lookup('env','ARTIFACTS') }}"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+  become: yes
+  become_user: "{{ ansible_deployer }}"
+  
+# ====================================================================================================================================
+
+  tasks:
+
+# ====================================================================================================================================
+
+    - name: Configure Bashrc
+      copy:
+        src: "{{ artifacts }}/home/user/.bashrc"
+        dest: "~/.bashrc"
+
+    - name: Create Directory 
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      with_items:
+        - "~/.local/bin"
+        - "~/.local/etc"
+        - "~/install"
+        - "~/work"
+
+    - name: Secure Directory 
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0700"
+      with_items:
+        - "/home/{{ ansible_deployer }}"
+        - "/home/{{ ansible_deployer }}/.ssh"
+
+    # - name: Configure Midnight Commander
+    #   copy:
+    #     src: "{{ artifacts }}/home/user/.config/mc"
+    #     dest: "~/.config/"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    # - name: Configure SSH
+    #   copy: 
+    #     src: "{{ artifacts }}/home/user/.ssh/config"
+    #     dest: "~/.ssh/"
+    #     mode: "0644"
+
+    - name: Copy Private Keys
+      copy:
+        src: "{{ item }}"
+        dest: "~/.ssh/"
+        mode: "0600"
+      with_fileglob:
+        - "{{ artifacts }}/home/user/.ssh/id_rsa_*.key"
+
+    - name: Copy Public Keys
+      copy:
+        src: "{{ item }}"
+        dest: "~/.ssh/"
+        mode: "0644"
+      with_fileglob:
+        - "{{ artifacts }}/home/user/.ssh/id_rsa_*.pub"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    # - name: Configure Git
+    #   copy: 
+    #     src: "{{ artifacts }}/home/user/.gitconfig"
+    #     dest: "~/"
+
+    # - name: Configure GitHub Cli
+    #   copy:
+    #     src: "{{ artifacts }}/home/user/.config/gh"
+    #     dest: "~/.config/"
+    #     mode: "0600"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Copy Gbin
+      copy:
+        src: "{{ artifacts }}/home/user/.local/gbin"
+        dest: "~/.local/"
+        mode: "0755"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    # - name: Configure GnuPG Directory
+    #   file:
+    #     path: "~/.gnupg"
+    #     state: directory
+    #     mode: "0700"
+
+    # - name: Copy GnuPG Private Key
+    #   copy: 
+    #     src: "{{ artifacts }}/home/user/.gnupg/gpg_{{ ansible_deployer }}.key"
+    #     dest: "~/.gnupg/"
+    #     mode: "0600"
+
+    # - name: Copy GnuPG Public Key
+    #   copy: 
+    #     src: "{{ artifacts }}/home/user/.gnupg/gpg_{{ ansible_deployer }}.pub"
+    #     dest: "~/.gnupg/"
+
+    # - name: Copy GnuPG Agent Config
+    #   copy: 
+    #     src: "{{ artifacts }}/home/user/.gnupg/gpg-agent.conf"
+    #     dest: "~/.gnupg/"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    # - name: Create AWS Directory
+    #   file:
+    #     path: "~/.aws"
+    #     state: directory
+    #     mode: "0700"
+
+    # - name: Configure AWS 
+    #   copy: 
+    #     src: "{{ artifacts }}/home/user/.aws/"
+    #     dest: "~/.aws/"
+    #     mode: "0600"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    # - name: Create Docker Directory
+    #   file:
+    #     path: "~/.docker"
+    #     state: directory
+    #     mode: "0700"
+
+    # - name: Configure Docker
+    #   copy: 
+    #     src: "{{ artifacts }}/home/user/.docker/config.json"
+    #     dest: "~/.docker/"
+    #     mode: "0600"
+
+# ====================================================================================================================================
+
+    - name: Configure Bashrc (root)
+      become: yes
+      become_user: "root"
+      copy:
+        src: "{{ artifacts }}/root/.bashrc"
+        dest: "~/.bashrc"
+
+    # - name: Configure Midnight Commander (root)
+    #   become: yes
+    #   become_user: "root"
+    #   copy:
+    #     src: "{{ artifacts }}/home/user/.config/mc"
+    #     dest: "~/.config/"
+
+# ====================================================================================================================================

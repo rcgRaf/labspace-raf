@@ -1,0 +1,111 @@
+---
+
+# ====================================================================================================================================
+
+- name: BOOTSTRAPPING
+  hosts: localhost
+  
+  vars:
+    - ansible_deployer: "{{ lookup('env','ANSIBLE_DEPLOYER') }}"
+    - artifacts: "{{ lookup('env','ARTIFACTS') }}"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+  become: yes
+  become_user: root
+  
+# ====================================================================================================================================
+
+  tasks:
+
+# ====================================================================================================================================
+
+    - name: Authorized_Keys (root)
+      authorized_key:
+        user: root
+        key: "{{ item }}"
+        state: present
+        exclusive: True
+      with_file:
+        - "{{ artifacts }}/home/user/.ssh/id_rsa_{{ ansible_deployer }}.pub"
+
+    - name: Authorized_Keys
+      authorized_key:
+        user: "{{ ansible_deployer }}"
+        key: "{{ item }}"
+        state: present
+        exclusive: True
+      with_file:
+        - "{{ artifacts }}/home/user/.ssh/id_rsa_{{ ansible_deployer }}.pub"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Configure Sudoers 
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: "^%sudo"
+        line: "%sudo ALL=(ALL) NOPASSWD: ALL"
+        validate: "visudo -cf %s"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Create Directory 
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      with_items:
+        - "/cmd"
+
+# ====================================================================================================================================
+
+    - name: Install Packages
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - python3-pip
+        - net-tools
+        - vim
+        - wget
+        - figlet
+        - git
+        - zip
+        - mc
+        - tree
+        - whois
+        - links
+        - lynx
+
+# ====================================================================================================================================
+
+    - name: Configure SSHd
+      template:
+        src: "./templates/sshd_config.{{ ansible_distribution }}.{{ ansible_distribution_major_version }}.j2"
+        dest: "/etc/ssh/sshd_config"
+        owner: root
+        group: root
+        mode: "0600"
+
+    - name: Configure SSH
+      copy:
+        src: "./files/ssh_config"
+        dest: "/etc/ssh/"
+
+    - name: Configure WSL
+      copy:
+        src: "./files/wsl.conf"
+        dest: "/etc/"
+
+# ====================================================================================================================================
+
+    - name: Copy Commands
+      copy: 
+        src: "../synced_cmd/"
+        dest: "/cmd/"
+        mode: "0755"
+
+# ====================================================================================================================================
+
+
