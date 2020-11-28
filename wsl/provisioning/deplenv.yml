@@ -133,6 +133,12 @@
         msg: " !!!WARNING!!! Install Vagrant: \" sudo apt install {{ downloads }}/vagrant_{{ vagrant_version }}_x86_64.deb \" !!!WARNING!!!"
       when: not vagrant.stat.exists
 
+    - name: Set Vagrant 
+      lineinfile:
+        dest: "~/.bashrc"
+        state: present
+        line: "export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS=\"1\""
+
 # ====================================================================================================================================
 
     - name: Add GitHub Key
