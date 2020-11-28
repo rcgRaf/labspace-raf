@@ -108,7 +108,7 @@ mkdir -p $HOME_WIN/Work
 
 # Fix Repo
 #
-cd $HOME_WIN/Work/wsl/$PROJECT_NAME/
+cd $HOME_WIN/Work/$PROJECT_NAME/
 git config --unset core.filemode
 git config --unset core.autocrlf
 git config --unset core.ignorecase
@@ -123,7 +123,7 @@ sudo apt install -y ansible
 
 # Configure WSL
 #
-cd $HOME_WIN/Work/wsl/$PROJECT_NAME && ./provision.sh
+cd $HOME_WIN/Work/$PROJECT_NAME && ./wsl/provision.sh
 #
 
 #===Vagrant=================================================================================================================
@@ -131,6 +131,7 @@ cd $HOME_WIN/Work/wsl/$PROJECT_NAME && ./provision.sh
 # Install Vagrant
 #
 cd $HOME_WSL/install && sudo apt install ./vagrant_2.2.9_x86_64.deb
+bash
 #
 
 #===========================================================================================================================
