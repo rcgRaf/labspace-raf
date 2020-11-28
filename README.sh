@@ -93,6 +93,9 @@ wget -P $HOME_WSL/.local/gbin/ https://raw.githubusercontent.com/arabadj/public-
 wget -P $HOME_WSL/.local/gbin/ https://raw.githubusercontent.com/arabadj/public-scripts/main/ssh-load-windows
 chmod +x $HOME_WSL/.local/gbin/ssh-load-*
 #
+mkdir -p $ARTIFACTS/home/user/.local/gbin
+cp $HOME_WSL/.local/gbin/ssh-load-* $ARTIFACTS/home/user/.local/gbin/
+#
 $HOME_WSL/.local/gbin/ssh-load-linux install
 bash
 
