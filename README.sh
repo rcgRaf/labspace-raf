@@ -100,10 +100,10 @@ sudo service ssh --full-restart
 # Modify Bashrc
 #
 echo "# Add Paths" >> $HOME/.bashrc
-echo "export PATH=\"$HOME/.local/gbin:$PATH\"" >> $HOME/.bashrc
+echo "export PATH=\"\$HOME/.local/gbin:\$PATH\"" >> $HOME/.bashrc
 echo "" >> $HOME/.bashrc
 echo "# Modify Prompt" >> $HOME/.bashrc
-echo "export PS1='\[\033[01;32m\]\u@$WSL_DISTRO_NAME:\[\033[34m\]\w\$\[\033[00m\] '" >> $HOME/.bashrc
+echo "export PS1='\[\033[01;32m\]\u@\$WSL_DISTRO_NAME:\[\033[34m\]\w\$\[\033[00m\] '" >> $HOME/.bashrc
 echo "" >> $HOME/.bashrc
 #
 
