@@ -108,7 +108,9 @@ mkdir -p $ARTIFACTS/home/user/.local/gbin
 cp $HOME_WSL/.local/gbin/ssh-load-* $ARTIFACTS/home/user/.local/gbin/
 #
 $HOME_WSL/.local/gbin/ssh-load-linux install
+#
 bash
+#
 
 #===Git=====================================================================================================================
 
