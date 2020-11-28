@@ -1,4 +1,4 @@
-![picture](logo.png)
 
 Read ./README.sh
 
+![picture](logo.png)
