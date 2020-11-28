@@ -147,6 +147,7 @@ cd $HOME_WIN/Work/$PROJECT_NAME && ./wsl/provision.sh
 # Install Vagrant
 #
 cd $HOME_WSL/install && sudo apt install ./vagrant_2.2.9_x86_64.deb
+#
 bash
 #
 
