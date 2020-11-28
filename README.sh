@@ -97,7 +97,17 @@ sudo ssh-keygen -A
 sudo service ssh --full-restart
 #
 
-# Install SSH Keys loader (optional)
+# Modify Bashrc
+#
+echo "# Add Paths" >> $HOME/.bashrc
+echo "export PATH=\"$HOME/.local/gbin:$PATH\"" >> $HOME/.bashrc
+echo "" >> $HOME/.bashrc
+echo "# Modify Prompt" >> $HOME/.bashrc
+echo "export PS1='\[\033[01;32m\]\u@$WSL_DISTRO_NAME:\[\033[34m\]\w\$\[\033[00m\] '" >> $HOME/.bashrc
+echo "" >> $HOME/.bashrc
+#
+
+# Install SSH Keys loader
 #
 mkdir -p $HOME_WSL/.local/gbin
 wget -P $HOME_WSL/.local/gbin/ https://raw.githubusercontent.com/arabadj/public-scripts/main/ssh-load-linux
@@ -108,6 +118,9 @@ mkdir -p $ARTIFACTS/home/user/.local/gbin
 cp $HOME_WSL/.local/gbin/ssh-load-* $ARTIFACTS/home/user/.local/gbin/
 #
 $HOME_WSL/.local/gbin/ssh-load-linux install
+#
+
+# Reload Bash
 #
 bash
 #
@@ -147,7 +160,6 @@ cd $HOME_WIN/Work/$PROJECT_NAME && ./wsl/provision.sh
 cd $HOME_WIN/Work/$PROJECT_NAME && ./wsl/winstrap.sh
 #
 
-
 #===VirtualBox==============================================================================================================
 
 # Set your "Default Machine Folder" with gui to:
@@ -165,6 +177,9 @@ cd $HOME_WIN/Work/$PROJECT_NAME && ./wsl/winstrap.sh
 # Install Vagrant
 #
 cd $HOME_WSL/install && sudo apt install ./vagrant_2.2.9_x86_64.deb
+#
+
+# Reload Bash
 #
 bash
 #
