@@ -7,12 +7,7 @@ exit 0
 # !!! DO NOT RUN THIS BLINDLY !!! 
 # !!! THESE ARE HINTS ONLY !!! 
 
-#===Files===================================================================================================================
-
-# Your private keys are named: id_rsa*.key
-# Your public keys are named: id_rsa*.pub
-
-#===WSL=====================================================================================================================
+#===Variables===============================================================================================================
 
 # Export Variables
 #
@@ -25,6 +20,17 @@ export HOME_WIN="/mnt/c/Users/$USER_WIN"
 export ARTIFACTS="$HOME_WIN/OneDrive/Artifacts/$SPACE"
 export DEPLOYER="$USER_WSL"
 #
+
+#===Files===================================================================================================================
+
+mkdir -p $ARTIFACTS/home/user/.ssh
+mkdir -p $ARTIFACTS/root
+
+# Put your keys in $ARTIFACTS/home/user/.ssh/
+# Your private keys are named: id_rsa*.key
+# Your public keys are named: id_rsa*.pub
+
+#===WSL=====================================================================================================================
 
 # Enable SUDO with NOPASSWD: sudo vi /etc/sudoers
 # Edit Lines:
@@ -56,6 +62,8 @@ wsl.exe -t $WSL_DISTRO_NAME
 #---------------------------------------------------------------------------------------------------------------------------
 
 # !!! EXPORT VARIABLES AGAIN !!!
+
+#---------------------------------------------------------------------------------------------------------------------------
 
 # Update and Install Prerequisites
 #
