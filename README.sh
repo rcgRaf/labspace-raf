@@ -142,6 +142,11 @@ sudo apt install -y ansible
 cd $HOME_WIN/Work/$PROJECT_NAME && ./wsl/provision.sh
 #
 
+# Configure Windows
+#
+cd $HOME_WIN/Work/$PROJECT_NAME && ./wsl/winstrap.sh
+#
+
 #===Vagrant=================================================================================================================
 
 # Install Vagrant
