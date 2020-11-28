@@ -16,7 +16,7 @@ exit 0
 
 # Export Variables
 #
-export PROJECT_NAME="wsl-arabadj"
+export PROJECT_NAME="labspace"
 export SPACE="Labspace"
 export USER_WSL="$USER"
 export USER_WIN="$(whoami.exe | cut -d '\' -f 2 | tr -d '\n' | tr -d '\r')"
@@ -50,7 +50,7 @@ exit
 
 # Terminate and Open WSL again
 #
-wsl.exe -t Ubuntu
+wsl.exe -t $WSL_DISTRO_NAME
 #
 
 #---------------------------------------------------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ sudo apt install -y wget
 sudo apt install -y git
 #
 
-# Configure SSH (if have your keys in Artifacts)
+# Configure SSH
 #
 mkdir -p $HOME_WSL/.ssh && chmod 700 $HOME_WSL/.ssh
 cp $ARTIFACTS/home/user/.ssh/id_rsa_*.pub $HOME_WSL/.ssh/ && chmod 644 $HOME_WSL/.ssh/id_rsa_*.pub
@@ -100,10 +100,10 @@ bash
 
 # Clone Repo
 #
-mkdir -p $HOME_WIN/Work/wsl
+mkdir -p $HOME_WIN/Work
 #
-[ ! -d $HOME_WIN/Work/wsl/$PROJECT_NAME ] && git -C $HOME_WIN/Work/wsl clone https://github.com/arabadj/$PROJECT_NAME.git
-[ -d $HOME_WIN/Work/wsl/$PROJECT_NAME ] && git -C $HOME_WIN/Work/wsl/$PROJECT_NAME pull 
+[ ! -d $HOME_WIN/Work/$PROJECT_NAME ] && git -C $HOME_WIN/Work clone https://github.com/arabadj/$PROJECT_NAME.git
+[ -d $HOME_WIN/Work/$PROJECT_NAME ] && git -C $HOME_WIN/Work/$PROJECT_NAME pull 
 #
 
 # Fix Repo
