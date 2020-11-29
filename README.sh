@@ -212,6 +212,17 @@ cd $HOME_WIN/Work/spaces/$PROJECT_NAME && ./wsl/winstrap.sh
 wsl.exe -t $WSL_DISTRO_NAME
 #
 
+# To Provision WSL: Go to your ./wsl directory
+#
+ssh-load-linux
+#
+./bootstrap.sh  # Base provisioning
+./profile.sh    # Profile provisioning
+./deplenv.sh    # Deployment environment provisioning
+./provision.sh  # Provisions above listed provisioning
+./pullconfig.sh # Syncs artifacts from WSL to Artifacts
+./winstrap.sh   # Does some Windows configuration
+
 #===VirtualBox==============================================================================================================
 
 # Set your "Default Machine Folder" with gui to:
@@ -247,7 +258,7 @@ ssh-load-linux
 cd $HOME_WSL/install && sudo apt install ./vagrant_2.2.9_x86_64.deb
 #
 
-# Run Vagrants: Go to you Vagrantfile directories
+# Run and Provision boxes: Go to your Vagrantfile directories
 #
 ssh-load-linux
 #
