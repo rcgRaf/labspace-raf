@@ -15,10 +15,10 @@ Vagrant.configure("2") do |config|
 
   config.vm.synced_folder '.', '/vagrant', disabled: true
 
-  config.vm.synced_folder './synced_cmd', '/cmd', 
+  config.vm.synced_folder '../cmd', '/cmd', 
     owner: "root", group: "root", mount_options: ["dmode=755,fmode=755"]
 
-  config.vm.synced_folder './synced_folder', '/vagrant', 
+  config.vm.synced_folder './folder', '/vagrant', 
     owner: "root", group: "root", mount_options: ["dmode=755,fmode=644"]
 
 #------------------------------------------------------------------------------------------------------------------------------------

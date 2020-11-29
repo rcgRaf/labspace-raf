@@ -129,15 +129,15 @@ bash
 
 # Clone Repo
 #
-mkdir -p $HOME_WIN/Work
+mkdir -p $HOME_WIN/Work/spaces
 #
-[ ! -d $HOME_WIN/Work/$PROJECT_NAME ] && git -C $HOME_WIN/Work clone https://github.com/arabadj/$PROJECT_NAME.git
-[ -d $HOME_WIN/Work/$PROJECT_NAME ] && git -C $HOME_WIN/Work/$PROJECT_NAME pull 
+[ ! -d $HOME_WIN/Work/spaces/$PROJECT_NAME ] && git -C $HOME_WIN/Work/spaces clone https://github.com/arabadj/$PROJECT_NAME.git
+[ -d $HOME_WIN/Work/spaces/$PROJECT_NAME ] && git -C $HOME_WIN/Work/spaces/$PROJECT_NAME pull 
 #
 
 # Fix Repo
 #
-cd $HOME_WIN/Work/$PROJECT_NAME/
+cd $HOME_WIN/Work/spaces/$PROJECT_NAME/
 git config --unset core.filemode
 git config --unset core.autocrlf
 git config --unset core.ignorecase
@@ -152,12 +152,12 @@ sudo apt install -y ansible
 
 # Configure WSL
 #
-cd $HOME_WIN/Work/$PROJECT_NAME && ./wsl/provision.sh
+cd $HOME_WIN/Work/spaces/$PROJECT_NAME && ./wsl/provision.sh
 #
 
 # Configure Windows
 #
-cd $HOME_WIN/Work/$PROJECT_NAME && ./wsl/winstrap.sh
+cd $HOME_WIN/Work/spaces/$PROJECT_NAME && ./wsl/winstrap.sh
 #
 
 #===VirtualBox==============================================================================================================
@@ -186,8 +186,8 @@ bash
 
 # Run Vagrants
 #
-cd $HOME_WIN/Work/$PROJECT_NAME && ./vagrant/lab-centos/up.sh
-cd $HOME_WIN/Work/$PROJECT_NAME && ./vagrant/lab-ubuntu/up.sh
+cd $HOME_WIN/Work/spaces/$PROJECT_NAME && ./vagrant/lab-centos/up.sh
+cd $HOME_WIN/Work/spaces/$PROJECT_NAME && ./vagrant/lab-ubuntu/up.sh
 #
 
 # Connect to VMs
