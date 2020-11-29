@@ -249,6 +249,8 @@ cd $HOME_WSL/install && sudo apt install ./vagrant_2.2.9_x86_64.deb
 
 # Run Vagrants: Go to you Vagrantfile directories
 #
+ssh-load-linux
+#
 ./up.sh         # Boots a box and provisions it
 ./halt.sh       # Halts a box
 ./reload.sh     # Reloads a box
