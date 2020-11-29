@@ -7,7 +7,7 @@ exit 0
 # !!! DO NOT RUN THIS BLINDLY !!! 
 # !!! THESE ARE HINTS ONLY !!! 
 
-#===Variables===============================================================================================================
+#===Files===================================================================================================================
 
 # Export Variables
 #
@@ -21,8 +21,6 @@ export ARTIFACTS="$HOME_WIN/OneDrive/Artifacts/$SPACE"
 export DEPLOYER="$USER_WSL"
 #
 
-#===Files===================================================================================================================
-
 mkdir -p $ARTIFACTS/home/user/.ssh
 mkdir -p $ARTIFACTS/root
 
@@ -35,7 +33,9 @@ mkdir -p $ARTIFACTS/root
 
 #===WSL=====================================================================================================================
 
-# Enable SUDO with NOPASSWD: sudo vi /etc/sudoers
+# Enable SUDO with NOPASSWD 
+#
+sudo vi /etc/sudoers
 # Edit Lines:
 #
 # %sudo   ALL=(ALL:ALL) NOPASSWD: ALL
@@ -44,6 +44,7 @@ mkdir -p $ARTIFACTS/root
 # Configure WSL Options:
 #
 sudo su -
+
 cat > /etc/wsl.conf <<-EOT
 [automount]
 enabled = true
@@ -57,16 +58,10 @@ EOT
 exit
 #
 
-# Terminate and Open WSL again
+# Terminate and Re-Open WSL again
 #
 wsl.exe -t $WSL_DISTRO_NAME
 #
-
-#---------------------------------------------------------------------------------------------------------------------------
-
-# !!! EXPORT VARIABLES AGAIN !!!
-
-#---------------------------------------------------------------------------------------------------------------------------
 
 # Update and Install Prerequisites
 #
@@ -77,6 +72,23 @@ sudo apt install -y wget
 sudo apt install -y git
 #
 
+# Terminate and Re-Open WSL again
+#
+wsl.exe -t $WSL_DISTRO_NAME
+#
+
+# Export Variables
+#
+export PROJECT_NAME="labspace"
+export SPACE="Labspace"
+export USER_WSL="$USER"
+export USER_WIN="$(whoami.exe | cut -d '\' -f 2 | tr -d '\n' | tr -d '\r')"
+export HOME_WSL="$HOME"
+export HOME_WIN="/mnt/c/Users/$USER_WIN"
+export ARTIFACTS="$HOME_WIN/OneDrive/Artifacts/$SPACE"
+export DEPLOYER="$USER_WSL"
+#
+
 # Configure SSH
 #
 mkdir -p $HOME_WSL/.ssh && chmod 700 $HOME_WSL/.ssh
@@ -85,7 +97,10 @@ cp $ARTIFACTS/home/user/.ssh/id_rsa_*.key $HOME_WSL/.ssh/ && chmod 600 $HOME_WSL
 cat $HOME_WSL/.ssh/id_rsa_$USER_WSL.pub > $HOME_WSL/.ssh/authorized_keys
 #
 
-# Configure SSH Server: sudo vi /etc/ssh/sshd_config
+# Configure SSH Server
+#
+sudo vi /etc/ssh/sshd_config
+#
 # Edit and uncomment ines:
 #
 # Port 2222
@@ -120,12 +135,29 @@ cp $HOME_WSL/.local/gbin/ssh-load-* $ARTIFACTS/home/user/.local/gbin/
 $HOME_WSL/.local/gbin/ssh-load-linux install
 #
 
-# Reload Bash
+# Terminate and Re-Open WSL again
 #
-bash
+wsl.exe -t $WSL_DISTRO_NAME
+#
+
+# Load SSH Keys
+#
+ssh-load-linux
 #
 
 #===Git=====================================================================================================================
+
+# Export Variables
+#
+export PROJECT_NAME="labspace"
+export SPACE="Labspace"
+export USER_WSL="$USER"
+export USER_WIN="$(whoami.exe | cut -d '\' -f 2 | tr -d '\n' | tr -d '\r')"
+export HOME_WSL="$HOME"
+export HOME_WIN="/mnt/c/Users/$USER_WIN"
+export ARTIFACTS="$HOME_WIN/OneDrive/Artifacts/$SPACE"
+export DEPLOYER="$USER_WSL"
+#
 
 # Clone Repo
 #
