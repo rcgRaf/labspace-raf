@@ -9,8 +9,8 @@ sudo apt upgrade -y
 
 sudo apt install kde-plasma-desktop
 
-# sudo wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
-# sudo yum localinstall -y google-chrome-stable_current_x86_64.rpm
-# sudo rm -f google-chrome-stable_current_x86_64.rpm
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt --fix-broken install ./google-chrome-stable_current_amd64.deb
+rm -f google-chrome-stable_current_amd64.deb
 
 #===========================================================================================================================
