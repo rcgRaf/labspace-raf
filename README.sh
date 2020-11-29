@@ -140,11 +140,6 @@ $HOME_WSL/.local/gbin/ssh-load-linux install
 wsl.exe -t $WSL_DISTRO_NAME
 #
 
-# Load SSH Keys
-#
-ssh-load-linux
-#
-
 #===Git=====================================================================================================================
 
 # Export Variables
@@ -157,6 +152,10 @@ export HOME_WSL="$HOME"
 export HOME_WIN="/mnt/c/Users/$USER_WIN"
 export ARTIFACTS="$HOME_WIN/OneDrive/Artifacts/$SPACE"
 export DEPLOYER="$USER_WSL"
+#
+# Load SSH Keys
+#
+ssh-load-linux
 #
 
 # Clone Repo
@@ -177,6 +176,22 @@ git config --unset core.ignorecase
 
 #===Ansible=================================================================================================================
 
+# Export Variables
+#
+export PROJECT_NAME="labspace"
+export SPACE="Labspace"
+export USER_WSL="$USER"
+export USER_WIN="$(whoami.exe | cut -d '\' -f 2 | tr -d '\n' | tr -d '\r')"
+export HOME_WSL="$HOME"
+export HOME_WIN="/mnt/c/Users/$USER_WIN"
+export ARTIFACTS="$HOME_WIN/OneDrive/Artifacts/$SPACE"
+export DEPLOYER="$USER_WSL"
+#
+# Load SSH Keys
+#
+ssh-load-linux
+#
+
 # Install ANSIBLE
 #
 sudo apt install -y ansible
@@ -190,6 +205,11 @@ cd $HOME_WIN/Work/spaces/$PROJECT_NAME && ./wsl/provision.sh
 # Configure Windows
 #
 cd $HOME_WIN/Work/spaces/$PROJECT_NAME && ./wsl/winstrap.sh
+#
+
+# Terminate and Re-Open WSL again
+#
+wsl.exe -t $WSL_DISTRO_NAME
 #
 
 #===VirtualBox==============================================================================================================
@@ -206,21 +226,39 @@ cd $HOME_WIN/Work/spaces/$PROJECT_NAME && ./wsl/winstrap.sh
 
 #===Vagrant=================================================================================================================
 
+# Export Variables
+#
+export PROJECT_NAME="labspace"
+export SPACE="Labspace"
+export USER_WSL="$USER"
+export USER_WIN="$(whoami.exe | cut -d '\' -f 2 | tr -d '\n' | tr -d '\r')"
+export HOME_WSL="$HOME"
+export HOME_WIN="/mnt/c/Users/$USER_WIN"
+export ARTIFACTS="$HOME_WIN/OneDrive/Artifacts/$SPACE"
+export DEPLOYER="$USER_WSL"
+#
+# Load SSH Keys
+#
+ssh-load-linux
+#
+
 # Install Vagrant
 #
 cd $HOME_WSL/install && sudo apt install ./vagrant_2.2.9_x86_64.deb
 #
 
-# Reload Bash
+# Run Vagrants: Go to you Vagrantfile directories
 #
-bash
+./up.sh         # Boots a box and provisions it
+./halt.sh       # Halts a box
+./reload.sh     # Reloads a box
+./destroy.sh    # Destroys a box
+./ssh.sh        # Connects to a box with "vagrant" user only from the localhost
 #
-
-# Run Vagrants
-#
-cd $HOME_WIN/Work/spaces/$PROJECT_NAME && ./vagrant/lab-centos/up.sh
-cd $HOME_WIN/Work/spaces/$PROJECT_NAME && ./vagrant/lab-ubuntu/up.sh
-#
+./bootstrap.sh  # Base provisioning
+./profile.sh    # Profile provisioning
+./deplenv.sh    # Deployment environment provisioning
+./provision.sh  # Provisions above listed provisioning
 
 # Connect to VMs
 #
