@@ -11,6 +11,6 @@ for FUNCTION in $(cat $PROJECT_ROOT/environment.sh | grep "^function" | awk '{pr
 cd $PROJECT_ROOT
 #===========================================================================================================================
 
-vagrant destroy && rm -rf $PROJECT_ROOT/.vagrant
+vagrant destroy && rm -rf $PROJECT_ROOT/.vagrant && rm -rf $HOME_WIN/VirtualBox/$PROJECT_NAME
 
 #===========================================================================================================================
