@@ -102,7 +102,7 @@
 
     # - name: Copy Commands
     #   copy: 
-    #     src: "../cmd/"
+    #     src: "../commands/"
     #     dest: "/cmd/"
     #     mode: "0755"
 
