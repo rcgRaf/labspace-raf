@@ -25,3 +25,8 @@ jobs:
         uses: actions/checkout@v2
 
       
+  example-job:
+    steps:
+      - name: Run build script
+        run: ./.github/scripts/ping-slack.sh
+        shell: bash
