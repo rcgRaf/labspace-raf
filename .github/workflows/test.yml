@@ -1,4 +1,3 @@
----
 name: CI
 'on':
   pull_request:
@@ -14,19 +13,10 @@ jobs:
     name: Molecule
     # Set the type of machine to run on
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        distro:
-          - centos8
-          - debian10
-
     steps:
       - name: Check out the codebase.
         uses: actions/checkout@v2
-
-      
-  example-job:
-    steps:
+        
       - name: Run build script
         run: ./.github/scripts/ping-slack.sh
         shell: bash
