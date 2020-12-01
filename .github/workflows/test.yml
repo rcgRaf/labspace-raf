@@ -24,7 +24,7 @@ jobs:
           echo "$ENV_MESSAGE" "$ENV_SLACK_WEBHOOK"
         
       - name: Run build script
-        run: ./.github/scripts/ping-slack.sh
+        run: sudo ./.github/scripts/ping-slack.sh
         shell: bash
         env:
           ENV_SLACK_WEBHOOK:  ${{secrets.SLACK_WEBHOOK }}
