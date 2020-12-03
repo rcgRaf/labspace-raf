@@ -93,7 +93,9 @@ export DEPLOYER="$USER_WSL"
 #
 mkdir -p $HOME_WSL/.ssh && chmod 700 $HOME_WSL/.ssh
 cp $ARTIFACTS/home/user/.ssh/id_rsa_*.pub $HOME_WSL/.ssh/ && chmod 644 $HOME_WSL/.ssh/id_rsa_*.pub
+cp $ARTIFACTS/home/user/.ssh/id_rsa_*.pub $HOME_WSL/.ssh/ && chmod 644 $HOME_WSL/.ssh/id_rsa_*.pub
 cp $ARTIFACTS/home/user/.ssh/id_rsa_*.key $HOME_WSL/.ssh/ && chmod 600 $HOME_WSL/.ssh/id_rsa_*.key
+cp $ARTIFACTS/home/user/.ssh/id_*.key $HOME_WSL/.ssh/ && chmod 600 $HOME_WSL/.ssh/id_*.key
 cat $HOME_WSL/.ssh/id_rsa_$USER_WSL.pub > $HOME_WSL/.ssh/authorized_keys
 #
 
