@@ -1,6 +1,8 @@
 name: CI
 'on':
-  pull_request:
+  issue_comment:
+    types:
+      - created
   push:
     branches:
       - master
@@ -8,9 +10,9 @@ name: CI
 jobs:
 # Set the job key. The key is displayed as the job name
 # when a job name is not provided
-  test:
+  Ping_Slack:
     # Name the Job
-    name: Molecule
+    name: Ping_Slack
     # Set the type of machine to run on
     runs-on: ubuntu-latest
     steps:
@@ -20,3 +22,5 @@ jobs:
       - name: Run build script
         run: ./.github/scripts/ping-slack.sh
         shell: bash
+        env:
+          ENV_SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
