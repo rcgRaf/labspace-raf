@@ -20,6 +20,8 @@ jobs:
       - name: Check out the codebase.
         uses: actions/checkout@v2
         
+      - run: echo ${{ github.event.issue_comment.comment }}
+      
       - name: Run build script
         run: ./.github/scripts/ping-slack.sh
         shell: bash
