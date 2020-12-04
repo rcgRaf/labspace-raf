@@ -1,0 +1,93 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+#====================================================================================================================================
+
+Vagrant.configure("2") do |config|
+
+#------------------------------------------------------------------------------------------------------------------------------------
+
+  config.vm.box_check_update = false
+    
+  config.vm.box = "arabadj/ubuntu2004-powerbox"
+  config.vm.box_version = "3.0.34"
+
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+
+  config.vm.synced_folder '../commands', '/cmd', 
+    owner: "root", group: "root", mount_options: ["dmode=755,fmode=755"]
+
+  config.vm.synced_folder './folder', '/vagrant', 
+    owner: "root", group: "root", mount_options: ["dmode=755,fmode=644"]
+
+#------------------------------------------------------------------------------------------------------------------------------------
+
+  config.vm.hostname = "#{ENV.fetch("VAGRANT_HOSTNAME")}"
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "#{ENV.fetch("VAGRANT_HOSTNAME")}"
+    vb.memory = 2048
+    vb.cpus = 2
+    vb.customize ["modifyvm", :id, "--natnet1", "#{ENV.fetch("VAGRANT_NETWORK_NAT")}"]
+  end
+
+#------------------------------------------------------------------------------------------------------------------------------------
+
+  config.vm.network :forwarded_port, guest: 22, host: "#{ENV.fetch("VAGRANT_SSH_PORT")}", id: "ssh"
+  config.vm.network "private_network", ip: "#{ENV.fetch("VAGRANT_NETWORK_PRIVATE")}"
+  config.vm.network "public_network",
+    use_dhcp_assigned_default_route: true
+
+  config.vm.provision "route_nat", type: "shell", run: "always", inline: <<-ROUTE
+    ip route del default via $(ip route ls | grep default | grep eth2 | grep dhcp | awk '{print $3}') dev eth2 metric 75 &> /dev/null 
+    ip route rep default via $(ip route ls | grep default | grep eth0 | grep dhcp | awk '{print $3}') dev eth0 metric 75 &> /dev/null
+    echo IP: $(ip addr ls | grep global | awk '{print $2" "}' | cut -d "/" -f 1)
+    echo GW: $(ip route ls | head -1 | awk '{print $3}')
+    ROUTE
+
+  config.vm.provision "route_bridge", type: "shell", run: "never", inline: <<-ROUTE
+    ip route del default via $(ip route ls | grep default | grep eth0 | grep dhcp | awk '{print $3}') dev eth0 metric 75 &> /dev/null 
+    ip route rep default via $(ip route ls | grep default | grep eth2 | grep dhcp | awk '{print $3}') dev eth2 metric 75 &> /dev/null
+    echo IP: $(ip addr ls | grep global | awk '{print $2" "}' | cut -d "/" -f 1)
+    echo GW: $(ip route ls | head -1 | awk '{print $3}')
+    ROUTE
+
+#------------------------------------------------------------------------------------------------------------------------------------
+
+  config.ssh.forward_agent = true
+  config.ssh.insert_key = false
+  config.ssh.private_key_path = ["#{ENV.fetch("VAGRANT_SSH_INSECURE_KEY")}", "#{ENV.fetch("VAGRANT_SSH_PRIVATE_KEY")}"] 
+  config.vm.provision "file", source: "#{ENV.fetch("VAGRANT_SSH_PUBLIC_KEY")}", destination: "~/.ssh/authorized_keys"
+
+#------------------------------------------------------------------------------------------------------------------------------------
+  
+  config.vm.provision "bootstrap", type: "ansible" do |ansible|
+    ansible.playbook = "#{ENV.fetch("CONFIGURE_ROOT")}/bootstrap.yml"
+  end
+
+  config.vm.provision "firewall", type: "ansible" do |ansible|
+    ansible.playbook = "#{ENV.fetch("CONFIGURE_ROOT")}/firewall.yml"
+  end
+
+  config.vm.provision "firewall_status", run: "always", type: "shell" do |shell|
+    shell.inline = <<-FIREWALL
+      iptables -L INPUT -nv
+      FIREWALL
+  end
+
+  config.vm.provision "profile", type: "ansible" do |ansible|
+    ansible.playbook = "#{ENV.fetch("CONFIGURE_ROOT")}/profile.yml"
+  end
+
+  config.vm.provision "deplenv", type: "ansible" do |ansible|
+    ansible.playbook = "#{ENV.fetch("CONFIGURE_ROOT")}/deplenv.yml"
+  end
+
+  config.vm.provision "information", run: "never", type: "ansible" do |ansible|
+    ansible.playbook = "#{ENV.fetch("CONFIGURE_ROOT")}/information.yml"
+  end
+
+#------------------------------------------------------------------------------------------------------------------------------------
+
+end
+
+#====================================================================================================================================

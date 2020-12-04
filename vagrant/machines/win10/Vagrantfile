@@ -1,0 +1,54 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+#====================================================================================================================================
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box_check_update = false
+
+  config.vm.box = "tas50/windows_10"
+  config.vm.box_version = "202002.04.0"
+
+  config.vm.boot_timeout = 500
+
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+  config.vm.synced_folder './folder', '/vagrant'
+
+  config.vm.communicator = "winrm"
+  config.winrm.host = "localhost"
+  config.winrm.username = "vagrant"
+  config.winrm.password = "vagrant"
+  config.winrm.guest_port = "#{ENV.fetch("VAGRANT_WINRM_PORT")}"
+
+  config.vm.network "forwarded_port", guest: 5985, host: "#{ENV.fetch("VAGRANT_WINRM_PORT")}", id: "winrm", auto_correct: true
+  config.vm.network "forwarded_port", guest: 5986, host: "#{ENV.fetch("VAGRANT_WINRM_SSL_PORT")}", id: "winrm-ssl", auto_correct: true
+  config.vm.network "forwarded_port", guest: 3389, host: "#{ENV.fetch("VAGRANT_RDP_PORT")}", id: "rdp", auto_correct: true
+  config.vm.network "forwarded_port", guest: 22, host: "#{ENV.fetch("VAGRANT_SSH_PORT")}", id: "ssh", auto_correct: true
+
+  config.vm.network "private_network", ip: "#{ENV.fetch("VAGRANT_NETWORK_PRIVATE")}"
+  # config.vm.network "public_network",
+  #   use_dhcp_assigned_default_route: true
+
+  config.vm.hostname = "#{ENV.fetch("VAGRANT_HOSTNAME")}"
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = true
+    vb.name = "#{ENV.fetch("VAGRANT_HOSTNAME")}"
+    vb.memory = 3072
+    vb.cpus = 2
+    vb.customize ["modifyvm", :id, "--natnet1", "#{ENV.fetch("VAGRANT_NETWORK_NAT")}"]
+    # vb.customize ["modifyvm", :id, "--memory", "1024"]
+    # vb.customize ["modifyvm", :id, "--vram", "128"]
+    # vb.customize ["modifyvm", :id,  "--cpus", "2"]
+    # vb.customize ["modifyvm", :id, "--ioapic", "on"]
+    # vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    # vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    # vb.customize ["guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 10000]
+    # vb.customize ['modifyvm', :id, '--clipboard', 'bidirectional']
+    # vb.customize ["modifyvm", :id, "--usb", "on"]
+    # vb.customize ["modifyvm", :id, "--usbxhci", "on"]
+  end
+
+
+end
+#====================================================================================================================================
