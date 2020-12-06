@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #===VARIABLES===============================================================================================================
-export PROJECT_NAME="win10-arabadj"
-export SPACE="Privatespace"
+export PROJECT_NAME="win10-lab"
+export SPACE="Labspace"
 export USER_WSL="$USER"
 export USER_WIN="$(whoami.exe | cut -d '\' -f 2 | tr -d '\n' | tr -d '\r')"
 export HOME_WSL="$HOME"
@@ -14,7 +14,7 @@ export DEPLOYER="$USER_WSL"
 export CONFIGURE_ROOT="$PROJECT_ROOT/provisioning"
 #---------------------------------------------------------------------------------------------------------------------------
 export VAGRANT_HOSTNAME="$PROJECT_NAME"
-export VAGRANT_ID="213"
+export VAGRANT_ID="203"
 export VAGRANT_NETPREFIX_NAT="192.168.71"
 export VAGRANT_NETPREFIX_PRIVATE="192.168.73"
 export VAGRANT_NETWORK_NAT="$VAGRANT_NETPREFIX_NAT.0/24"
