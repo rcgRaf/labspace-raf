@@ -8,13 +8,14 @@ Vagrant.configure("2") do |config|
 #------------------------------------------------------------------------------------------------------------------------------------
 
   config.vm.box_check_update = false
-    
-  config.vm.box = "arabadj/ubuntu2004-powerbox"
+
+  # config.vm.box = "arabadj/centos8-additions"
+  config.vm.box = "arabadj/centos8-powerbox"
   config.vm.box_version = "3.0.34"
 
   config.vm.synced_folder '.', '/vagrant', disabled: true
 
-  config.vm.synced_folder '../commands', '/cmd', 
+  config.vm.synced_folder '../.commands', '/cmd', 
     owner: "root", group: "root", mount_options: ["dmode=755,fmode=755"]
 
   config.vm.synced_folder './folder', '/vagrant', 
@@ -28,6 +29,7 @@ Vagrant.configure("2") do |config|
     vb.memory = 2048
     vb.cpus = 2
     vb.customize ["modifyvm", :id, "--natnet1", "#{ENV.fetch("VAGRANT_NETWORK_NAT")}"]
+    vb.customize ["modifyvm", :id, "--audio", "none"]
   end
 
 #------------------------------------------------------------------------------------------------------------------------------------

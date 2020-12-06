@@ -1,0 +1,155 @@
+#!/bin/bash
+
+#===BASE====================================================================================================================
+
+MYNAME="$(realpath $0)"
+BASENAME="$(basename $MYNAME)"
+MYDIR="$(dirname $MYNAME)"
+INSTANCE_PATH="$MYDIR/vagrant"
+
+if [ -x /usr/bin/figlet ]; then
+    ECHO="/usr/bin/figlet"
+else
+    ECHO="/bin/echo"
+fi
+
+$ECHO $BASENAME
+echo "$(echo $MYDIR | rev | cut -d '/' -f 1 | rev)"
+echo ""
+echo ""
+
+# exit 0
+
+#===FUNCTIONS===============================================================================================================
+
+function vgr_instance_list () {
+    echo ""
+    echo "Instance List:"
+    echo ""
+    echo "NAME    " $'\t' "HOSTNAME    " $'\t' "IP    " $'\t\t' "STATUS"
+    for i in $(ls -l "$INSTANCE_PATH" | awk '{print $9}'); do
+        if [ -d "$i" ]; then
+            source $INSTANCE_PATH/$i/environment.sh
+            INSTANCE_STATUS="$(VBoxManage.exe showvminfo $i 2>/dev/null | grep "State" | cut -d "(" -f 1 | awk '{print $2" "$3}')"
+            echo "$i" $'\t' "$PROJECT_NAME" $'\t' "$VAGRANT_NETWORK_PRIVATE" $'\t\t' "$INSTANCE_STATUS"
+        fi
+    done
+    echo ""
+    echo "Usage: $BASENAME [new|edit|remove|action] name [template]"
+    echo ""
+}
+
+function vgr_instance_actions_list () {
+    ls "$INSTANCE_PATH/$INSTANCE_NAME" | grep sh | grep -v environment | cut -d "." -f 1 
+}
+
+function vgr_instance () {
+    INSTANCE_ACTION_LIST="$(vgr_instance_actions_list)"
+    for a in $INSTANCE_ACTION_LIST; do
+        [ "$a" == "$INSTANCE_ACTION" ] && INSTANCE_ACTION_EXISTS="true"
+    done
+    if [ "$INSTANCE_ACTION_EXISTS" ]; then
+        $INSTANCE_PATH/$INSTANCE_NAME/$INSTANCE_ACTION.sh 2>/dev/null
+    else
+        echo ""
+        echo "Instance \"$INSTANCE_NAME\" Actions:"
+        echo ""
+        vgr_instance_actions_list
+        echo ""
+        echo ""
+    fi
+}
+
+function vgr_instance_new_list () {
+    echo ""
+    echo "Templates:"
+    echo ""
+    ls "$INSTANCE_PATH/.templates/" | cut -d "." -f 1 
+    echo ""
+    echo "Usage: $BASENAME [new|edit|remove|action] name [template]"
+    echo ""
+}
+
+function vgr_instance_new () {
+    if [ -z "$INSTANCE_NAME" ]; then
+        echo ""
+        echo "New instance name is missing..."
+        echo ""
+        vgr_instance_new_list
+    elif [ -z "$INSTANCE_TEMPLATE" ] || [ ! -d "$INSTANCE_PATH/.templates/$INSTANCE_TEMPLATE" ]; then
+        echo ""
+        echo "New instance template is wrong or missing..."
+        echo ""
+        vgr_instance_new_list
+        echo ""
+    else
+        cp -a "$INSTANCE_PATH/.templates/$INSTANCE_TEMPLATE" "$INSTANCE_PATH/$INSTANCE_NAME"
+        echo ""
+        echo "New instance \"$INSTANCE_NAME\" ($INSTANCE_TEMPLATE) is created."
+        echo ""
+        vgr_instance_list
+        echo ""
+    fi
+}
+
+function vgr_instance_remove () {
+    if [ -z "$INSTANCE_NAME" ] || [ ! -d "$INSTANCE_PATH/$INSTANCE_NAME" ]; then
+        echo ""
+        echo "Instance name is wrong or missing..."
+        echo ""
+        vgr_instance_list
+        echo ""
+    else
+        "$INSTANCE_PATH/$INSTANCE_NAME/destroy.sh" && rm -rf "$INSTANCE_PATH/$INSTANCE_NAME"
+        echo ""
+        [ ! -d "$INSTANCE_PATH/$INSTANCE_NAME/.vagrant" ] && echo "Instance \"$INSTANCE_NAME\" is removed."
+        echo ""
+        vgr_instance_list
+        echo ""
+    fi
+}
+function vgr_instance_edit () {
+    if [ -z "$INSTANCE_NAME" ] || [ ! -d "$INSTANCE_PATH/$INSTANCE_NAME" ]; then
+        echo ""
+        echo "Instance name is wrong or missing..."
+        echo ""
+        vgr_instance_list
+        echo ""
+    else
+        vi "$INSTANCE_PATH/$INSTANCE_NAME/environment.sh"
+        vgr_instance_list
+        echo ""
+    fi
+}
+
+#===ACTIONS=================================================================================================================
+
+
+cd "$INSTANCE_PATH"
+
+INSTANCE_TEMPLATE="$3"
+INSTANCE_NAME="$2"
+INSTANCE_ACTION="$1"
+
+case  $1 in
+    "new")
+        vgr_instance_new 
+        ;;
+    "remove")
+        vgr_instance_remove 
+        ;;
+    "edit")
+        vgr_instance_edit 
+        ;;
+    "")
+        vgr_instance_list
+        ;;
+    "list")
+        vgr_instance_list
+        ;;
+    *)
+        vgr_instance $INSTANCE_ACTION $INSTANCE_NAME
+        ;;
+esac
+
+#===========================================================================================================================

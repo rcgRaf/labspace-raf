@@ -96,15 +96,15 @@
     #     path: "{{ item }}"
     #     state: directory
     #   with_items:
-    #     - "/mnt/c/Commands"
+    #     - "/mnt/c/.commands"
     #     - "/mnt/c/totalcmd"
 
 # ------------------------------------------------------------------------------------------------------------------------------------
 
     # - name: Copy Commands
     #   copy: 
-    #     src: "{{ artifacts }}/Local/Commands/"
-    #     dest: "/mnt/c/Commands/"
+    #     src: "{{ artifacts }}/Local/.commands/"
+    #     dest: "/mnt/c/.commands/"
     #     mode: "preserve"
 
 # ------------------------------------------------------------------------------------------------------------------------------------

@@ -1,0 +1,56 @@
+---
+
+# ====================================================================================================================================
+
+- name: FIREWALL
+  hosts: all
+
+  vars:
+    - ansible_deployer: "{{ lookup('env','ANSIBLE_DEPLOYER') }}"
+    - artifacts: "{{ lookup('env','ARTIFACTS') }}"
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+  become: yes
+  become_user: root
+  
+# ====================================================================================================================================
+
+  tasks:
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+
+    - name: Install Firewall
+      copy:
+        src: "./files/firewall.service"
+        dest: "/etc/systemd/system/"
+        owner: root
+        group: root
+        mode: 0644
+      # register: firewall
+
+    - name: Configure Firewall
+      copy:
+        src: "./files/firewall"
+        dest: "/usr/local/sbin/"
+        owner: root
+        group: root
+        mode: 0755
+      register: firewall
+
+    - name: Restart Firewall
+      service: name={{ item }} state=restarted
+      with_items:
+        - firewall
+      when: 
+        - firewall.changed
+
+    - name: Enable/Disable Firewall
+      service: 
+        name: firewall
+        state: stopped
+        enabled: no
+
+# ====================================================================================================================================
+
+

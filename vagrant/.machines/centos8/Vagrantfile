@@ -8,8 +8,7 @@ Vagrant.configure("2") do |config|
 #------------------------------------------------------------------------------------------------------------------------------------
 
   config.vm.box_check_update = false
-
-  # config.vm.box = "arabadj/centos8-additions"
+  
   config.vm.box = "arabadj/centos8-powerbox"
   config.vm.box_version = "3.0.34"
 
