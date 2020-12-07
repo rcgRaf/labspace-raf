@@ -132,6 +132,9 @@ INSTANCE_NAME="$2"
 INSTANCE_ACTION="$1"
 
 case  $1 in
+    "ssh")
+        ssh $INSTANCE_NAME
+        ;;
     "new")
         vgr_instance_new 
         ;;
