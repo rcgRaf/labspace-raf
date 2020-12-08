@@ -28,4 +28,4 @@ jobs:
         shell: bash
         env:
           ENV_SLACK_WEBHOOK:  ${{secrets.SLACK_WEBHOOK }}
-          ENV_MESSAGE: ${{ github.event.comment }}
+          ENV_MESSAGE: ${{ toJson(github.event.comment) }}
