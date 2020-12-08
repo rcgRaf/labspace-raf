@@ -2,7 +2,7 @@
 echo $GITHUB_EVENT_PATH
 
 test=$GITHUB_EVENT_PATH
-data=@test
+data=$(jq . $test)
 
 echo $test
 echo $data
