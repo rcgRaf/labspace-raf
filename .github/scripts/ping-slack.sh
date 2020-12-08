@@ -6,4 +6,4 @@ data=$(jq . $test)
 
 echo $test
 echo $data
-curl -X POST -H 'Content-type: application/json' --data data $ENV_SLACK_WEBHOOK
+curl -X POST -H 'Content-type: application/json' --data @test $ENV_SLACK_WEBHOOK
