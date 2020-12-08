@@ -1,8 +1,8 @@
 #!/bin/bash
 echo $GITHUB_EVENT_PATH
 
-test = $GITHUB_EVENT_PATH
-data = @test
+test=$GITHUB_EVENT_PATH
+data=@test
 
 echo $test
 echo $data
