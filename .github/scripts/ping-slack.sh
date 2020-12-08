@@ -1,3 +1,5 @@
 #!/bin/bash
 echo $ENV_MESSAGE 
-curl -X POST -H 'Content-type: application/json' --data '{"text":$ENV_MESSAGE}' $ENV_SLACK_WEBHOOK
+Var
+
+curl -X POST -H 'Content-type: application/json' --data @$GITHUB_EVENT_PATH $ENV_SLACK_WEBHOOK
