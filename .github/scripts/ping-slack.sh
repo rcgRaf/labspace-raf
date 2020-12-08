@@ -1,6 +1,4 @@
 #!/bin/bash
-test=$GITHUB_EVENT_PATH
-data=$(jq .action $test)
-echo $test
+data=$(jq .action $GITHUB_EVENT_PATH)
 echo $data
 cat $GITHUB_EVENT_PATH | curl -X POST -H 'Content-type: application/json' -d @- $ENV_SLACK_WEBHOOK
